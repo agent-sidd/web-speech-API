@@ -4,24 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Text to speech</title>
+    <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    .tgl
+    {
+ position: absolute;
+  top:330px; 
+  margin: 40px;
+  width: 130px;
+  height: 130px;
+  font: 13px/130px 'Barlow Semi Condensed', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  text-align: center;
+  background: white; 
+  border-radius: 50%;
+  animation: shadow-pulse 1s infinite;
+}
+    </style>
 </head>
 <body>
-    <div class="conatiner  form">
-    <h1>Web Speech API </h1>
-<form autocomplete="off" class="frm" action="index.php">
-   <input type="text"id="inp" name="msg"><br>
-  <input id="sub" type="button" onclick="myFunction()" value="Submit">
-</form>
-</div>
-<script>
-function myFunction() {
-  var y = document.getElementById("inp").value;
-  var msg = new SpeechSynthesisUtterance(y);
-  window.speechSynthesis.speak(msg);
-}
-</script>
+    <div class="container">
+        <h4> USING WEB speechRecognition API</h4>
+          <div id='message'>Click on mic to start</div>
+          <br>
+          <div class="inner-left"> 
+            <button id='btnGiveCommand' onclick="toogleFunction()"> <i class="fa fa-microphone" aria-hidden="true" style="font-size: 40px;"></i></button>
+           <br><br>
+       </div>
+    </div>
+
+    <script>
+       function toogleFunction() {
+       var element = document.getElementById("btnGiveCommand");
+       element.classList.toggle("tgl");
+       }
+        var message = document.querySelector('#message');
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+
+        var grammar = '#JSGF V1.0;'
+
+        var recognition = new SpeechRecognition();
+        var speechRecognitionList = new SpeechGrammarList();
+        speechRecognitionList.addFromString(grammar, 1);
+        recognition.grammars = speechRecognitionList;
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+
+        recognition.onresult = function(event) {
+            var last = event.results.length - 1;
+            var command = event.results[last][0].transcript;
+            message.textContent = '' + command + '.';
+        };
+
+        recognition.onspeechend = function() {
+            recognition.stop();
+            
+        };
+
+        recognition.onerror = function(event) {
+            message.textContent = 'Error occurred in recognition: ' + event.error;
+        }        
+
+        document.querySelector('#btnGiveCommand').addEventListener('click', function(){
+            recognition.start();
+           
+        });
+
+
     </script>
 </body>
 </html>
